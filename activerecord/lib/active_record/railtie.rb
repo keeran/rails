@@ -319,5 +319,19 @@ To keep using the current cache store, you can turn off cache versioning entirel
         end
       end
     end
+
+    initializer "active_record.query_comment_config" do
+      config.after_initialize do
+        if ActiveRecord::Base.query_comments_enabled
+          comment_context = ConnectionAdapters::AbstractAdapter::QueryCommentContext
+          if comment_context.application.nil?
+            name = Rails.application.class.name.split("::").first
+            comment_context.update({ application_name: name })
+          end
+          comment_context.backtrace_cleaner = Rails.backtrace_cleaner
+          ConnectionAdapters::AbstractAdapter.prepend_execution_methods
+        end
+      end
+    end
   end
 end

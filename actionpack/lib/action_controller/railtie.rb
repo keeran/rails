@@ -85,5 +85,21 @@ module ActionController
         ActionController::Metal.descendants.each(&:action_methods) if config.eager_load
       end
     end
+
+    initializer "action_controller.query_comments" do |app|
+      require "active_record/railties/query_comments"
+
+      ActiveSupport.on_load(:action_controller_base) do
+        mattr_accessor :query_comments_action_filter_enabled, instance_accessor: false, default: true
+      end
+
+      ActiveSupport.on_load(:active_record) do
+        if app.config.active_record.query_comments_enabled
+          ActionController::Base.include(ActiveRecord::Railties::QueryComments::ActionController)
+          ActionController::API.include(ActiveRecord::Railties::QueryComments::ActionController)
+          ActiveRecord::ConnectionAdapters::AbstractAdapter::QueryCommentContext.components = [:application, :controller, :action]
+        end
+      end
+    end
   end
 end
