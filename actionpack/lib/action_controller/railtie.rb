@@ -92,9 +92,8 @@ module ActionController
       end
 
       ActiveSupport.on_load(:active_record) do
-        require "active_record/railties/query_log_tags"
-
         if app.config.active_record.query_log_tags_enabled
+          require "active_record/railties/query_log_tags"
           ActionController::Base.include(ActiveRecord::Railties::QueryLogTags::ActionController)
           ActionController::API.include(ActiveRecord::Railties::QueryLogTags::ActionController)
           ActiveRecord::ConnectionAdapters::AbstractAdapter::QueryLogTagsContext.components.concat [:controller, :action]
