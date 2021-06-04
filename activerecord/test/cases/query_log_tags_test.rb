@@ -115,6 +115,26 @@ class QueryLogTagsTest < ActiveRecord::TestCase
     log_tag_context.components = components
   end
 
+  def test_last_line_component_clears_cache
+    cached = log_tag_context.cache_query_log_tags
+    log_tag_context.cache_query_log_tags = true
+    components = log_tag_context.components
+    log_tag_context.components = [:line]
+
+    assert_sql(%r{/\*line:#{__FILE__}:[0-9]+:in `block in test_last_line_component_clears_cache'\*/$}) do
+      Dashboard.first
+    end
+
+    log_tag_context.components = [:application, :line]
+
+    assert_sql(%r{/\*application:active_record,line:#{__FILE__}:[0-9]+:in `block in test_last_line_component_clears_cache'\*/$}) do
+      Dashboard.first
+    end
+  ensure
+    log_tag_context.components = components
+    log_tag_context.cache_query_log_tags = cached
+  end
+
   def test_pid
     components = log_tag_context.components
     log_tag_context.components = [:pid]

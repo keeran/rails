@@ -175,6 +175,8 @@ module ActiveRecord
           end
 
           def line # :nodoc:
+            # if we're ever calling this component we should disable caching
+            self.cache_query_log_tags = false
             backtrace_cleaner.clean(caller.lazy).first
           end
 
