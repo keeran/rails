@@ -84,7 +84,7 @@ module ApplicationTests
       controller = UsersController.new
       filters = controller._process_action_callbacks.map { |cb| cb.filter }
 
-      refute_includes filters, :record_query_log_tags
+      assert_not_includes filters, :record_query_log_tags
     end
 
     test "job perform method has tagging filters enabled by default" do
@@ -107,7 +107,7 @@ module ApplicationTests
       job = UserJob.new
       proc_locations = job._perform_callbacks.map { |cb| cb.filter.source_location.first.delete_prefix(framework_path) }
 
-      refute_includes proc_locations, "/activerecord/lib/active_record/railties/query_log_tags.rb"
+      assert_not_includes proc_locations, "/activerecord/lib/active_record/railties/query_log_tags.rb"
     end
 
     test "query cache is cleared between requests" do
@@ -145,13 +145,12 @@ module ApplicationTests
     end
 
     private
+      def boot_app(env = "production")
+        ENV["RAILS_ENV"] = env
 
-    def boot_app(env = "production")
-      ENV["RAILS_ENV"] = env
-
-      require "#{app_path}/config/environment"
-    ensure
-      ENV.delete "RAILS_ENV"
-    end
+        require "#{app_path}/config/environment"
+      ensure
+        ENV.delete "RAILS_ENV"
+      end
   end
 end
