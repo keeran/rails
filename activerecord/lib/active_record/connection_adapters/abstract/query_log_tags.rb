@@ -91,7 +91,6 @@ module ActiveRecord
         thread_mattr_accessor :cached_comment, instance_accessor: false
 
         class << self
-
           @@backtrace_cleaner.add_silencer { |line| line.match?(/lib\/active_(record|support)/) }
 
           # Updates the context used to construct the query log tags.
