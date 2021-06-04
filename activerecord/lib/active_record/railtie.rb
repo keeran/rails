@@ -328,6 +328,7 @@ To keep using the current cache store, you can turn off cache versioning entirel
             name = Rails.application.class.name.split("::").first
             comment_context.update(application_name: name)
           end
+          comment_context.backtrace_cleaner = Rails.backtrace_cleaner
           ActiveSupport.on_load(:active_record) do
             ConnectionAdapters::AbstractAdapter.prepend_execution_methods
           end
