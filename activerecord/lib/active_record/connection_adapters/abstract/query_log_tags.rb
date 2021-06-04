@@ -91,6 +91,9 @@ module ActiveRecord
         thread_mattr_accessor :cached_comment, instance_accessor: false
 
         class << self
+
+          @@backtrace_cleaner.add_silencer { |line| line.match?(/lib\/active_(record|support)/) }
+
           # Updates the context used to construct the query log tags.
           # Resets the cached comment if <tt>cache_query_log_tags</tt> is +true+.
           def update(**options)
@@ -173,7 +176,6 @@ module ActiveRecord
           end
 
           def line # :nodoc:
-            backtrace_cleaner.add_silencer { |line| line.match?(/lib\/active_(record|support)/) }
             backtrace_cleaner.clean(caller.lazy).first
           end
 
