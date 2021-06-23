@@ -72,9 +72,10 @@ class QueryLogTagsTest < ActiveRecord::TestCase
 
   def test_delete_is_commented
     log_tag_context.components = [:application]
+    record = Dashboard.first
 
     assert_sql(%r{/\*application:active_record\*/}) do
-      Dashboard.first.destroy
+      record.destroy
     end
   end
 
